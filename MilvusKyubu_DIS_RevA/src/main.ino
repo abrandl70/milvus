@@ -9,10 +9,13 @@
 #include <Nextion.h>
 
 
+
+
 //#define nextion Serial1
 
 #define HOSTNAME "Milvus Kyubu DIS"
 #define FIRMWARE "D1MINI_OTA_MQ_DIS_RevA_v10"
+
 
 //#define DEBUG
 
@@ -44,8 +47,11 @@ int numericalData;
 
 // WIFI & MQTT
 
-const char* ssid = "TheMatrix";
-const char* password = "tamghI,.ocl17";
+//const char* ssid = "TheMatrix";
+//const char* password = "tamghI,.ocl17";
+
+const char* ssid = "milvus-net";
+const char* password = "superbrandls";
 
 unsigned long lastPub;
 unsigned long now;
