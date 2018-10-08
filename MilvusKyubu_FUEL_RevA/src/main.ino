@@ -10,27 +10,25 @@
 
 //#define nextion Serial1
 
-#define HOSTNAME "Milvus Kyubu DIS"
-#define FIRMWARE "D1MINI_OTA_MQ_DIS_RevA_v10"
+#define HOSTNAME "Milvus Kyubu FUEL"
+#define FIRMWARE "D1MINI_OTA_MQ_FUEL_RevA_v10"
 
 
 //#define DEBUG
 
 
-// DISPLAY variables
+// Variables
 
+#define LED1 D5
+#define LED2 D7
 
-int levelY = 0;
-int levelX = 0;
+int fuelPin = A0;    // select the input pin for the potentiometer
+int rawFuelValue = 0;
+int rawFuelThreshold = 500;
 
-String pitch;
-String roll;
-String dim;
-
-int pitchMin = 50;
-int pitchMax = 65;
-int rollMin = 35;
-int rollMax = 65;
+String fuelRaw;
+String fuelPercent;
+String fuelLiter;
 
 
 int touchRes[16];
@@ -75,7 +73,6 @@ DynamicJsonBuffer jsonBuffer2(bufferSize2);
 #define T_LOCALIP         "ip"
 
 
-
 #define GREEN 5806
 #define RED 53890
 
@@ -89,7 +86,7 @@ WiFiClient netclient;
 PubSubClient mqttClient(netclient);
 
 //SoftwareSerial nextion(DIS_RX, DIS_TX);  // RX, TX
-Nextion display(Serial1, 115200);
+Nextion display(Serial1, 9600);
 
 void printWifiStatus() {
   // print the SSID of the network you're attached to:
@@ -110,38 +107,10 @@ void printWifiStatus() {
 
 void updateDisplay() {
 
-  Serial.print(".");
-  dim = "dim=" + dim;
-
-  char __dim[sizeof(dim)];
-  dim.toCharArray(__dim, sizeof(__dim));
-
-  display.sendCommand(__dim);
-  dim="";
 
 
-  levelX = constrain(roll.toFloat()*10, -50, 50)+50;
-  levelY = constrain(pitch.toFloat()*10, -50, 50)+50;
 
 
-  display.setComponentText("v20", pitch);
-  display.setComponentText("v21", roll);
-
-  display.setComponentValue("h0", levelX);
-  display.setComponentValue("h1", levelY);
-
-  if (levelX <= rollMax && levelX >= rollMin){
-            display.sendCommand("h0.bco=5806");
-  }
-  else {
-            display.sendCommand("h0.bco=53890");
-  }
-  if (levelY <= pitchMax && levelY >= pitchMin){
-            display.sendCommand("h1.bco=5806");
-  }
-  else {
-            display.sendCommand("h1.bco=53890");
-  }
 
             // display.sendCommand("h1.bco=53890"); //senso_orange
             // display.sendCommand("h1.bco=5338"); //senso_blue
@@ -209,7 +178,7 @@ void callback(char* topic, byte * data, unsigned int length) {
       JsonObject& root = jsonBuffer2.parseObject(strPayload);
 
       const char* dimC = root["dim"]; // "23"
-      dim = String (dimC);
+      String dim = String (dimC);
 
       Serial.println(strPayload);
 
@@ -230,8 +199,8 @@ void callback(char* topic, byte * data, unsigned int length) {
       const char* rollC = root["roll"]; // "-5"
       //Serial.println(strPayload);
 
-      pitch = String (pitchC);
-      roll = String (rollC);
+      String pitch = String (pitchC);
+      String roll = String (rollC);
 
       updateDisplay();
 
@@ -290,7 +259,7 @@ void readDisplay () {
 
 void setup() {
 
-  Serial1.begin(115200);                   // Display
+  Serial1.begin(9600);                   // Display
   Serial.begin(115200);                    // Console Debug
 
   Serial.println();
@@ -346,8 +315,11 @@ void setup() {
   Serial.println(FIRMWARE);
   printWifiStatus();
 
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+
   display.init();
-  display.sendCommand("page title");
+  display.sendCommand("cal");
   display.sendCommand("dim=80");
   display.sendCommand("bkcmd=0");
 
@@ -363,12 +335,45 @@ void loop() {
   ArduinoOTA.handle();
 
   // start code here -----------------------------------------------------------
+  /*
+
   if (!mqttClient.connected()) {
     reconnect();
   }
+  */
+  rawFuelValue = analogRead(fuelPin);
+  delay (1000);
+
+  Serial.println(rawFuelValue);
+
+  fuelRaw = String(rawFuelValue, DEC);
+        rawFuelValue = rawFuelValue * 1.02;
+  fuelPercent= String(rawFuelValue, DEC);
+  fuelLiter = String(rawFuelValue, DEC);
+
+
+  display.setComponentText("d1", fuelRaw);
+  display.setComponentText("d2", fuelPercent);
+
+  if (rawFuelValue < rawFuelThreshold){
+
+    digitalWrite(LED1, HIGH);
+    digitalWrite(LED2, HIGH);
+    Serial.println("ON");
+
+  }
+
+  else {
+
+    digitalWrite(LED1, LOW);
+    digitalWrite(LED2, LOW);
+    Serial.println("OFF");
+
+  }
+
 
   readDisplay();
-  mqttClient.loop();
+  // mqttClient.loop();
 
   // end code here -----------------------------------------------------------
 
