@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/Andreas/.platformio/penv/bin:/Users/Andreas/.platformio/penv:/usr/local/opt/icu4c/sbin:/usr/local/opt/icu4c/bin:/Users/Andreas/anaconda3/bin:/Users/Andreas/Applications/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
