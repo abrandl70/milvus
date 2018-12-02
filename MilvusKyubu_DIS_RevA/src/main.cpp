@@ -11,7 +11,7 @@
 //#define nextion Serial1
 
 #define HOSTNAME "Milvus Kyubu DIS"
-#define FIRMWARE "D1MINI_OTA_MQ_DIS_RevA_v11"
+#define FIRMWARE "D1MINI_OTA_MQ_DIS_RevA_v12"
 
 
 //#define DEBUG
@@ -52,11 +52,11 @@ const char* password = "superbrandls";
 
 unsigned long lastPub;
 unsigned long now;
-unsigned long pubInt = 200;
+unsigned long pubInt = 100;
 char payload[8];
 char jsonarray[64];
 
-float EMA_a = 0.15;      //initialization of EMA alpha
+float EMA_a = 0.1;      //initialization of EMA alpha
 float pitchEMA = 0;          //initialization of EMA S
 float rollEMA = 0;          //initialization of EMA S
 
