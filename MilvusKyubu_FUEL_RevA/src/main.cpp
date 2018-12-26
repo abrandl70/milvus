@@ -279,7 +279,7 @@ void loop() {
     }
 
 
-    fuelPercent = map(rawFuelEMA, rawFuelMin, rawFuelMax, 0, 100);
+    fuelPercent = map(rawFuelEMA, rawFuelMax, rawFuelMin, 0, 100);
 
     if (fuelPercent < 0){
         fuelPercent = 0;
