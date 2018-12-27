@@ -11,7 +11,7 @@
 //#define nextion Serial1
 
 #define HOSTNAME "Milvus Kyubu DIS"
-#define FIRMWARE "D1MINI_OTA_MQ_DIS_RevA_v12"
+#define FIRMWARE "D1MINI_OTA_MQ_DIS_RevB_v20"
 
 
 //#define DEBUG
@@ -23,9 +23,14 @@
 int levelY = 0;
 int levelX = 0;
 
+int actionY = 0;
+int actionX = 0;
+
 String pitch;
 String roll;
 String dim;
+String pitchPic;
+String rollPic;
 
 int pitchMin = 50;
 int pitchMax = 65;
@@ -121,15 +126,73 @@ void updateDisplay() {
   dim="";
 
 
-  levelX = constrain(roll.toFloat()*10, -50, 50)+50;
-  levelY = constrain(pitch.toFloat()*10, -50, 50)+50;
+  levelX = constrain(roll.toFloat()*10, -50, 50);
+  levelY = constrain(pitch.toFloat()*10, -50, 50);
+
+  display.setComponentValue("levelY", levelY);
+  display.setComponentValue("levelX", levelX);
+
+  // ROLL actions
+
+  if (levelX > 15 )
+  {
+    actionX = 1;
+  } 
+
+  if (levelX < -15)
+  {
+    actionX = -1;
+  } 
+
+    if (levelX <= 15 && levelX >= -15)
+  {
+    actionX = 0;
+  } 
+
+  // PITCH Actions
+
+  if (levelY > 15 )
+  {
+    actionY = 1;
+  } 
+
+  if (levelY < 0)
+  {
+    actionY = -1;
+  } 
+
+    if (levelY <= 15 && levelY >= 0)
+  {
+    actionY = 0;
+  } 
+
+ display.setComponentValue("actionX", actionX);
+ display.setComponentValue("actionY", actionY);
+
+
 
 
   display.setComponentText("v20", pitch);
   display.setComponentText("v21", roll);
 
-  display.setComponentValue("h0", levelX);
-  display.setComponentValue("h1", levelY);
+  display.sendCommand("v20.pco=5338"); //senso_blue
+  display.sendCommand("v21.pco=5338"); //senso_blue
+
+
+  int pitchInt = pitch.toInt();
+  int rollInt = roll.toInt();
+
+  if (pitchInt >30) (pitchInt = 30);
+  if (pitchInt <-30) (pitchInt = -30);
+
+  if (rollInt >30) (rollInt = 30);
+  if (rollInt <-30) (rollInt = -30);
+
+
+  
+  display.setComponentValue("pitch", pitchInt);
+  display.setComponentValue("roll", rollInt);
+
 
   if (levelX <= rollMax && levelX >= rollMin){
             display.sendCommand("h0.bco=5806");
@@ -370,6 +433,7 @@ void setup() {
   display.sendCommand("page title");
   display.sendCommand("dim=80");
   display.sendCommand("bkcmd=0");
+
 
   //display.sendCommand("bauds=115200");
 
