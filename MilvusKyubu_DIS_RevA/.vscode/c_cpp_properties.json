@@ -93,7 +93,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=30603",
+                "PLATFORMIO=40000",
                 "ESP8266",
                 "ARDUINO_ARCH_ESP8266",
                 "ESP8266_WEMOS_D1MINI",
@@ -112,6 +112,5 @@
             "cppStandard": "c++11",
             "compilerPath": "/Users/Andreas/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc -mlongcalls -mtext-section-literals"
         }
-    ],
-    "version": 4
+    ]
 }
